@@ -11,8 +11,9 @@ class PostQuerySet(models.QuerySet):
                 order_by('published_at')
         return posts_at_year
 
-    def popular(self):
-        return self.annotate(Count('likes')).order_by('-likes__count')
+    def popular(self, top_number=5):
+        return self.annotate(Count('likes')) \
+            .order_by('-likes__count')[:top_number]
 
     def fetch_with_comments_count(self):
 
@@ -35,9 +36,9 @@ class PostQuerySet(models.QuerySet):
 
 class TagQuerySet(models.QuerySet):
 
-    def popular(self):
+    def popular(self, top_number=5):
         return self.annotate(related_posts_count=Count('posts')).\
-                    order_by('-related_posts_count')
+                    order_by('-related_posts_count')[:top_number]
 
 
 class Post(models.Model):
